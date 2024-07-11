@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAR with ARCore</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Upload Image for AR Model</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button onclick="uploadImage()">Upload</button>
+
+    <h2>AR View</h2>
+    <a-scene embedded arjs>
+        <a-marker preset="hiro">
+            <a-entity id="ar-model" position="0 0 0" scale="0.1 0.1 0.1"></a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        async function uploadImage() {
+            const input = document.getElementById('imageUpload');
+            const file = input.files[0];
+            if (!file) {
+                alert("Please select a file");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await axios.post('http://localhost:8000/predict', formData, {
+                    responseType: 'blob'
+                });
+
+                // Create a URL for the blob
+                const blob = response.data;
+                const url = URL.createObjectURL(blob);
+
+                // Set the URL to the model entity
+                const entity = document.getElementById('ar-model');
+                entity.setAttribute('gltf-model', url);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    </script>
+</body>
+</html>
