@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>AR Model Viewer</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+        }
+        h1, h2 {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        input, button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        a-scene {
+            width: 100%;
+            height: 60vh;
+            position: relative;
+        }
+        @media (max-width: 768px) {
+            a-scene {
+                height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image for AR Model</h1>
+        <input type="file" id="fileInput" accept="image/*" />
+        <button onclick="uploadImage()">Upload</button>
+        <h2>AR View</h2>
+    </div>
+
+    <a-scene embedded arjs='sourceType: webcam;'>
+        <a-marker preset="hiro">
+            <a-entity id="ar-model" position="50 150 0" scale="5 5 5"></a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        async function uploadImage() {
+            const input = document.getElementById('fileInput');
+            if (input.files.length === 0) {
+                alert('Please select a file');
+                return;
+            }
+
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await axios.post('https://cca8-103-212-147-170.ngrok-free.app/predict', formData, {
+                    headers : {"ngrok-skip-browser-warning": "69420"},
+                    responseType: 'blob'
+                });
+
+                const url = URL.createObjectURL(new Blob([response.data], { type: 'application/octet-stream' }));
+                console.log("Generated GLB URL:", url);
+
+                const arModel = document.getElementById('ar-model');
+                arModel.setAttribute('gltf-model', url);
+
+                arModel.addEventListener('model-loaded', () => {
+                    console.log('Model loaded successfully');
+                });
+
+                arModel.addEventListener('model-error', (error) => {
+                    console.error('Model loading error:', error);
+                });
+
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    </script>
+</body>
+</html>

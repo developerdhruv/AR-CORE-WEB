@@ -1,94 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebAR with ARCore</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100%;
-        }
-        .container {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 5px;
-        }
-        #imageUpload {
-            display: block;
-            margin-bottom: 10px;
-        }
-        #uploadButton {
-            display: block;
-        }
-        .ar-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        a-scene {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-    </style>
-</head>
+  <head>
+    <title>Chitradrishya-AI</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="demo-styles.css">
+    <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+
+  </head> 
 <body>
-    <div class="container">
-        <h1>Upload Image for AR Model</h1>
-        <input type="file" id="imageUpload" accept="image/*">
-        <button id="uploadButton" onclick="uploadImage()">Upload</button>
-    </div>
+  <div id="card">
+    <!-- All you need to put beautiful, interactive 3D content on your site: -->
+    <model-viewer src="https://cdn.glitch.global/1c62f241-4016-40e7-baac-5b40a538e23e/output.glb?v=1720776361515"
+                  ios-src="https://cdn.glitch.com/36cb8393-65c6-408d-a538-055ada20431b/Astronaut.usdz?v=1569545377878"
+                  poster="https://cdn.glitch.global/1c62f241-4016-40e7-baac-5b40a538e23e/chair.png?v=1720776363278"
+                  alt="ChitradrishyaAI"
+                  shadow-intensity="1"
+                  camera-controls
+                  auto-rotate ar>
+    </model-viewer>
+    <section class="attribution">
+      <span>
+        <h1>Chitradrishya</h1>
+        <span>By <a href="https://poly.google.com/view/dLHpzNdygsg" target="_blank">Dhruv</a></span>
+      </span>
+      
+    </section>
+    
+  </div>
 
-    <div class="ar-container">
-        <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;'>
-            <a-marker preset="hiro">
-                <a-entity id="ar-model" position="0 0 0" scale="0.1 0.1 0.1"></a-entity>
-            </a-marker>
-            <a-entity camera look-controls="enabled: false;"></a-entity>
-        </a-scene>
-    </div>
-
-    <script>
-        async function uploadImage() {
-            const input = document.getElementById('imageUpload');
-            const file = input.files[0];
-            if (!file) {
-                alert("Please select a file");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await axios.post('http://localhost:8000/predict', formData, {
-                    responseType: 'blob'
-                });
-
-                // Create a URL for the blob
-                const blob = response.data;
-                const url = URL.createObjectURL(blob);
-
-                // Set the URL to the model entity
-                const entity = document.getElementById('ar-model');
-                entity.setAttribute('gltf-model', url);
-            } catch (error) {
-                console.error('Error uploading image:', error);
-            }
-        }
-    </script>
+  <!-- Loads <model-viewer> for modern browsers: -->
+  <script type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+  </script>
 </body>
 </html>
